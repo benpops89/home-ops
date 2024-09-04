@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/budimanjojo/talhelper/master/pkg/config/schemas/talconfig.json
 ---
 # renovate: datasource=docker depName=ghcr.io/siderolabs/installer
-talosVersion: v1.7.4
+talosVersion: v1.7.0
 # renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
-kubernetesVersion: v1.30.1
+kubernetesVersion: v1.30.3
 
 clusterName: "alderaan"
 endpoint: https://10.0.1.100:6443
@@ -24,7 +24,6 @@ nodes:
   - hostname: "alderaan-101"
     ipAddress: "10.0.1.101"
     installDisk: "/dev/mmcblk0"
-    talosImageURL: factory.talos.dev/installer/ee21ef4a5ef808a9b7484cc0dda0f25075021691c8c09a276591eedb638ea1f9
     controlPlane: true
     networkInterfaces:
       - deviceSelector:
@@ -41,7 +40,6 @@ nodes:
   - hostname: "alderaan-102"
     ipAddress: "10.0.1.102"
     installDisk: "/dev/mmcblk0"
-    talosImageURL: factory.talos.dev/installer/ee21ef4a5ef808a9b7484cc0dda0f25075021691c8c09a276591eedb638ea1f9
     controlPlane: true
     networkInterfaces:
       - deviceSelector:
@@ -58,7 +56,6 @@ nodes:
   - hostname: "alderaan-103"
     ipAddress: "10.0.1.103"
     installDisk: "/dev/mmcblk0"
-    talosImageURL: factory.talos.dev/installer/ee21ef4a5ef808a9b7484cc0dda0f25075021691c8c09a276591eedb638ea1f9
     controlPlane: true
     networkInterfaces:
       - deviceSelector:
@@ -75,7 +72,6 @@ nodes:
   - hostname: "alderaan-104"
     ipAddress: "10.0.1.104"
     installDisk: "/dev/mmcblk0"
-    talosImageURL: factory.talos.dev/installer/ee21ef4a5ef808a9b7484cc0dda0f25075021691c8c09a276591eedb638ea1f9
     controlPlane: true
     networkInterfaces:
       - deviceSelector:
@@ -92,7 +88,6 @@ nodes:
   - hostname: "alderaan-105"
     ipAddress: "10.0.1.105"
     installDisk: "/dev/mmcblk0"
-    talosImageURL: factory.talos.dev/installer/ee21ef4a5ef808a9b7484cc0dda0f25075021691c8c09a276591eedb638ea1f9
     controlPlane: true
     networkInterfaces:
       - deviceSelector:
@@ -106,6 +101,20 @@ nodes:
         mtu: 1500
         vip:
           ip: "10.0.1.100"
+  - hostname: "alderaan-106"
+    ipAddress: "10.0.1.106"
+    installDisk: "/dev/nvme0n1"
+    controlPlane: false
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: "54:b2:03:9e:b0:ec"
+        dhcp: false
+        addresses:
+          - "10.0.1.106/24"
+        routes:
+          - network: 0.0.0.0/0
+            gateway: "10.0.1.1"
+        mtu: 1500
 
 # Global patches
 patches:
@@ -114,14 +123,37 @@ patches:
   - "@./patches/global/disable-search-domain.yaml"
   - "@./patches/global/hostdns.yaml"
   - "@./patches/global/kubelet.yaml"
-  - "@./patches/global/openebs-local.yaml"
   - "@./patches/global/sysctl.yaml"
+
+# Worker
+worker:
+  nodeLabels:
+    cpu: intel
+    gpu: true
+  machineSpec:
+    mode: metal
+    arch: amd64
+  schematic:
+    customization:
+      systemExtensions:
+        officialExtensions:
+          - siderolabs/i915-ucode
+          - siderolabs/intel-ucode
 
 # Controller patches
 controlPlane:
+  nodeLabels:
+    cpu: arm
+    gpu: false
+  machineSpec:
+    mode: metal
+    arch: arm64
+  schematic:
+    overlay:
+      name: rpi_generic
+      image: siderolabs/sbc-raspberrypi
   patches:
     - "@./patches/controller/api-access.yaml"
     - "@./patches/controller/cluster.yaml"
     - "@./patches/controller/disable-admission-controller.yaml"
     - "@./patches/controller/etcd.yaml"
-

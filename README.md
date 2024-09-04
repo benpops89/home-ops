@@ -1,3 +1,6 @@
+# Notes
+* Find disk by id `talosctl list /dev/disk/by-id`
+
 # ⛵ Cluster Template
 
 Welcome to my opinionated and extensible template for deploying a single Kubernetes cluster. The goal of this project is to make it easier for people interested in using Kubernetes to deploy a cluster at home on bare-metal or VMs.

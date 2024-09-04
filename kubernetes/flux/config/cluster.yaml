@@ -8,7 +8,7 @@ spec:
   interval: 30m
   url: "https://github.com/benpops89/home-ops.git"
   ref:
-    branch: "main"
+    tag: "bootstrap"
   ignore: |
     # exclude all
     /*
